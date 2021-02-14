@@ -1,23 +1,21 @@
 package server
 
 import (
-	"net/http"
-
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"whatw/config"
 	"whatw/controllers"
 )
 
 // NewRouter is constructor for router
-func NewRouter() (*echo.Echo, error) {
+func NewRouter() (*gin.Engine, error) {
 	c := config.GetConfig()
-	router := echo.New()
-	router.Use(middleware.Logger())
-	router.Use(middleware.Recover())
-	router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
+	router.Use(cors.New(cors.Config{
 		AllowOrigins: c.GetStringSlice("server.cors"),
-		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
 	}))
 
 	version := router.Group("/" + c.GetString("server.version"))

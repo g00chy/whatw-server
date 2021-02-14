@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/labstack/echo"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,11 +15,10 @@ func NewHealthController() *HealthController {
 }
 
 // Index is index route for health
-func (hc *HealthController) Index(c echo.Context) error {
+func (hc *HealthController) Index(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
 		"message": http.StatusText(http.StatusOK),
 		"result":  "OK",
 	})
-	return nil
 }

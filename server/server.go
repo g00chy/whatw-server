@@ -9,6 +9,6 @@ func Init() error {
 	if err != nil {
 		return err
 	}
-	r.Logger.Fatal(r.Start(":" + c.GetString("server.port")))
+	r.Run(":" + c.GetString("server.port"))
 	return nil
 }
