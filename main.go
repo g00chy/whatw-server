@@ -1,16 +1,24 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"flag"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"whatw/config"
+	"whatw/database"
+	"whatw/server"
 )
 
 func main() {
-	r := gin.New()
-	r.GET("/get", get)
-	r.Run()
-}
 
-func get(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"maker": "ok", "machine-number": "test", "high-w": 10, "low-w": 1})
+	env := flag.String("e", "development", "")
+	flag.Parse()
+
+	config.Init(*env)
+	database.Init(false)
+	defer database.Close()
+	if err := server.Init(); err != nil {
+		panic(err)
+	}
 }

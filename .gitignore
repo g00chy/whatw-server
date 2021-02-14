@@ -18,3 +18,4 @@ vendor/
 /*.iml
 /*.ipr
 /*.iws
+/database/db/dev.db
