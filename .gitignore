@@ -19,7 +19,6 @@ vendor/
 /*.ipr
 /*.iws
 /database/db/dev.db
-/database/db/dev.db
 # Default ignored files
 /shelf/
 /workspace.xml
@@ -31,3 +30,4 @@ vendor/
 
 /*.xml
 /*.iml
+/.idea/
