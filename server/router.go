@@ -18,10 +18,10 @@ func NewRouter() (*gin.Engine, error) {
 		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
 	}))
 
-	version := router.Group("/" + c.GetString("server.version"))
+	//version := router.Group("/" + c.GetString("server.version"))
 
 	healthController := controllers.NewHealthController()
-	version.GET("/health", healthController.Index)
+	router.GET("/health", healthController.Index)
 
 	return router, nil
 }
