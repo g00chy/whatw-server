@@ -29,5 +29,4 @@ vendor/
 /httpRequests/
 
 /*.xml
-/*.iml
 /.idea/
