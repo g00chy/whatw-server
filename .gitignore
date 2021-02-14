@@ -19,3 +19,15 @@ vendor/
 /*.ipr
 /*.iws
 /database/db/dev.db
+/database/db/dev.db
+# Default ignored files
+/shelf/
+/workspace.xml
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+
+/*.xml
+/*.iml

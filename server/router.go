@@ -20,8 +20,9 @@ func NewRouter() (*gin.Engine, error) {
 
 	//version := router.Group("/" + c.GetString("server.version"))
 
-	healthController := controllers.NewHealthController()
-	router.GET("/health", healthController.Index)
+	displayController := controllers.NewDisplayController()
+	router.GET("/display", displayController.Index)
+	router.PUT("/display", displayController.Put)
 
 	return router, nil
 }
