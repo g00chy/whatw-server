@@ -5,14 +5,14 @@ import (
 )
 
 type Display struct {
-	ID           uint
-	Maker		string
-	Model         string
-	Size        uint8
-	Hi          uint8
-	Low          uint8
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID        uint
+	Maker     string
+	Model     string
+	Size      float32
+	Hi        uint8
+	Low       uint8
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type Displays struct {

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"time"
 	"whatw/database"
 	"whatw/models"
 
@@ -9,13 +10,14 @@ import (
 )
 
 type JsonRequest struct {
-	Model  string `json:"field_model"`
-	Size  uint8    `json:"field_size"`
-	Low  uint8    `json:"field_low"`
-	Hi  uint8    `json:"field_hi"`
+	Model string  `json:"model"`
+	Maker string  `json:"maker"`
+	Size  float32 `json:"size"`
+	Low   uint8   `json:"low"`
+	Hi    uint8   `json:"hi"`
 }
 type JsonResponse struct {
-	ID uint8
+	ID uint
 	JsonRequest
 }
 
@@ -44,18 +46,17 @@ func (hc *DisplayController) Index(c *gin.Context) {
 		}
 	}
 
-
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
 		"message": http.StatusText(http.StatusOK),
 		"result":  "OK",
-		"data": result,
+		"data":    result,
 	})
 }
 
 func (hc *DisplayController) Put(c *gin.Context) {
 
-	var json JsonRequest
+	json := &JsonRequest{}
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -64,13 +65,16 @@ func (hc *DisplayController) Put(c *gin.Context) {
 	db := database.GetDB()
 	defer db.Close()
 
-	model := models.Display{Model: json.Model, Size: json.Size, Hi: json.Hi, Low: json.Low}
-	db.Create(model)
+	model := models.Display{Maker: json.Maker, Model: json.Model, Size: json.Size, Hi: json.Hi, Low: json.Low,
+		CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	result := db.Create(&model)
 
+	//c.Header("Content-type", "application/json")
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
 		"message": http.StatusText(http.StatusOK),
 		"result":  "OK",
-		"data": model,
+		"row":     result.RowsAffected,
+		"data":    model,
 	})
 }
