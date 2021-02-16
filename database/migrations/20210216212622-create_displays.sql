@@ -6,7 +6,9 @@ create table displays (
   model text,
   size integer,
   hi integer,
-  low integer
+  low integer,
+  created_at text,
+  updated_at text
 );
 -- +migrate Down
 drop table displays;
