@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"time"
@@ -64,12 +66,11 @@ func (hc *DisplayController) Put(c *gin.Context) {
 
 	defer c.Request.Body.Close()
 
-	if doCheckJson(buf[:length]) != nil {
-
-	}
 	var request DisplayJsonRequest
 	if err := json.Unmarshal(buf[:length], &request); err != nil {
-		log.Fatal(err)
+		log.Printf("%+v\n", err)
+		ReturnErrorResponse(c)
+		return
 	}
 
 	// TODO: move service
@@ -79,6 +80,10 @@ func (hc *DisplayController) Put(c *gin.Context) {
 		CreatedAt: time.Now(), UpdatedAt: time.Now()}
 	result := db.Create(&model)
 
+	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
+		log.Printf("%s", "record_notfound")
+	}
+
 	//c.Header("Content-type", "application/json")
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
@@ -87,9 +92,4 @@ func (hc *DisplayController) Put(c *gin.Context) {
 		"row":     result.RowsAffected,
 		"data":    model,
 	})
-}
-
-func doCheckJson([]byte) error {
-
-	return nil
 }

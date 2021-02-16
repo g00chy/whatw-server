@@ -2,6 +2,7 @@ environment: "development"
 db:
     provider: "sqlite3"
     url: "database/db/dev.db"
+    enable_log: true
 server:
     version: "v1"
     port: "3001"

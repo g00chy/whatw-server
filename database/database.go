@@ -26,6 +26,7 @@ func Init() {
 func openDB() error {
 	databaseUrl := c.GetString("db.url")
 	databaseType := c.GetString("db.provider")
+	enableSqlLog := c.GetBool("db.enable_log")
 
 	var err error
 	gConfig := &gorm.Config{
@@ -41,6 +42,10 @@ func openDB() error {
 	}
 	if databaseType == "mysql" {
 		d, err = gorm.Open(mysql.Open(databaseUrl), gConfig)
+	}
+
+	if enableSqlLog {
+		d.Logger = d.Logger.LogMode(logger.Info)
 	}
 
 	return err

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -18,4 +19,12 @@ func parseLimitOffset(c *gin.Context) (offset, limit int, err error) {
 		limit = 50
 	}
 	return
+}
+
+func ReturnErrorResponse(c *gin.Context) {
+	c.JSON(http.StatusInternalServerError,
+		gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": http.StatusText(http.StatusInternalServerError),
+		})
 }
