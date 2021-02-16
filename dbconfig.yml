@@ -1,0 +1,10 @@
+development:
+  dialect: sqlite3
+  datasource: database/db/dev.db
+  dir: database/migrations
+
+production:
+  dialect: postgres
+  datasource: dbname=myapp sslmode=disable
+  dir: migrations/postgres
+  table: migrations

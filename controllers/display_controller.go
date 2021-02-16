@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 	"whatw/database"
@@ -9,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type JsonRequest struct {
+type DisplayJsonRequest struct {
 	Model string  `json:"model"`
 	Maker string  `json:"maker"`
 	Size  float32 `json:"size"`
@@ -18,7 +20,7 @@ type JsonRequest struct {
 }
 type JsonResponse struct {
 	ID uint
-	JsonRequest
+	DisplayJsonRequest
 }
 
 // DisplayController controller for health request
@@ -26,14 +28,14 @@ type DisplayController struct{}
 
 // NewDisplayController is constructor for DisplayController
 func NewDisplayController() *DisplayController {
-	database.Init(true, models.Display{})
+	database.Init()
 	return new(DisplayController)
 }
 
 // Index is index route for health
 func (hc *DisplayController) Index(c *gin.Context) {
 	db := database.GetDB()
-	defer db.Close()
+
 	var result JsonResponse
 
 	var allDisplay []models.Display
@@ -41,8 +43,8 @@ func (hc *DisplayController) Index(c *gin.Context) {
 
 	for _, display := range allDisplay {
 		result = JsonResponse{
-			ID:          display.ID,
-			JsonRequest: JsonRequest{},
+			ID:                 display.ID,
+			DisplayJsonRequest: DisplayJsonRequest{},
 		}
 	}
 
@@ -56,16 +58,24 @@ func (hc *DisplayController) Index(c *gin.Context) {
 
 func (hc *DisplayController) Put(c *gin.Context) {
 
-	json := &JsonRequest{}
-	if err := c.ShouldBindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	buf := make([]byte, 2048)
+	// エラー判定がうまく行かないのでスルーします
+	length, _ := c.Request.Body.Read(buf)
+
+	defer c.Request.Body.Close()
+
+	if doCheckJson(buf[:length]) != nil {
+
+	}
+	var request DisplayJsonRequest
+	if err := json.Unmarshal(buf[:length], &request); err != nil {
+		log.Fatal(err)
 	}
 
+	// TODO: move service
 	db := database.GetDB()
-	defer db.Close()
 
-	model := models.Display{Maker: json.Maker, Model: json.Model, Size: json.Size, Hi: json.Hi, Low: json.Low,
+	model := models.Display{Maker: request.Maker, Model: request.Model, Size: request.Size, Hi: request.Hi, Low: request.Low,
 		CreatedAt: time.Now(), UpdatedAt: time.Now()}
 	result := db.Create(&model)
 
@@ -77,4 +87,9 @@ func (hc *DisplayController) Put(c *gin.Context) {
 		"row":     result.RowsAffected,
 		"data":    model,
 	})
+}
+
+func doCheckJson([]byte) error {
+
+	return nil
 }

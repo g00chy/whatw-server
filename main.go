@@ -6,7 +6,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"whatw/config"
-	"whatw/database"
 	"whatw/server"
 )
 
@@ -16,8 +15,7 @@ func main() {
 	flag.Parse()
 
 	config.Init(*env)
-	database.Init(false)
-	defer database.Close()
+
 	if err := server.Init(); err != nil {
 		panic(err)
 	}

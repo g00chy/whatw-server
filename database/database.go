@@ -1,24 +1,49 @@
 package database
 
 import (
-	"github.com/jinzhu/gorm"
+	"github.com/spf13/viper"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"whatw/config"
 )
 
 var d *gorm.DB
+var c *viper.Viper
 
 // Init initializes database
-func Init(isReset bool, models ...interface{}) {
-	c := config.GetConfig()
-	var err error
-	d, err = gorm.Open(c.GetString("db.provider"), c.GetString("db.url"))
+func Init() {
+	c = config.GetConfig()
+
+	err := openDB()
 	if err != nil {
 		panic(err)
 	}
-	if isReset {
-		d.DropTableIfExists(models)
+}
+
+func openDB() error {
+	databaseUrl := c.GetString("db.url")
+	databaseType := c.GetString("db.provider")
+
+	var err error
+	gConfig := &gorm.Config{
+		Logger:                                   logger.Default.LogMode(logger.Silent),
+		DisableForeignKeyConstraintWhenMigrating: true,
 	}
-	d.AutoMigrate(models...)
+
+	if databaseType == "sqlite3" {
+		d, err = gorm.Open(sqlite.Open(databaseUrl), gConfig)
+	}
+	if databaseType == "postgres" {
+		d, err = gorm.Open(postgres.Open(databaseUrl), gConfig)
+	}
+	if databaseType == "mysql" {
+		d, err = gorm.Open(mysql.Open(databaseUrl), gConfig)
+	}
+
+	return err
 }
 
 // GetDB returns database connection
@@ -26,7 +51,8 @@ func GetDB() *gorm.DB {
 	return d
 }
 
-// Close closes database
-func Close() {
-	d.Close()
-}
+//
+//// Close closes database
+//func Close() {
+//
+//}
