@@ -6,7 +6,6 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net/http"
-	"time"
 	"whatw/database"
 	"whatw/models"
 
@@ -19,10 +18,6 @@ type DisplayJsonRequest struct {
 	Size  float32 `json:"size"`
 	Low   uint8   `json:"low"`
 	Hi    uint8   `json:"hi"`
-}
-type JsonResponse struct {
-	ID uint
-	DisplayJsonRequest
 }
 
 // DisplayController controller for health request
@@ -38,23 +33,13 @@ func NewDisplayController() *DisplayController {
 func (hc *DisplayController) Index(c *gin.Context) {
 	db := database.GetDB()
 
-	var result JsonResponse
-
 	var allDisplay []models.Display
 	db.Find(&allDisplay)
-
-	for _, display := range allDisplay {
-		result = JsonResponse{
-			ID:                 display.ID,
-			DisplayJsonRequest: DisplayJsonRequest{},
-		}
-	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
 		"message": http.StatusText(http.StatusOK),
-		"result":  "OK",
-		"data":    result,
+		"data":    allDisplay,
 	})
 }
 
@@ -76,8 +61,7 @@ func (hc *DisplayController) Put(c *gin.Context) {
 	// TODO: move service
 	db := database.GetDB()
 
-	model := models.Display{Maker: request.Maker, Model: request.Model, Size: request.Size, Hi: request.Hi, Low: request.Low,
-		CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	model := models.Display{Maker: request.Maker, Model: request.Model, Size: request.Size, Hi: request.Hi, Low: request.Low}
 	result := db.Create(&model)
 
 	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
